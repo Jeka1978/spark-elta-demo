@@ -5,7 +5,9 @@ package com.elta
  */
 object Main {
   def main(args: Array[String]): Unit = {
-    print(12)
+    MainService.doWork()
+    val person = new Person("Shmulik")
+    println(123)
   }
 
 }
