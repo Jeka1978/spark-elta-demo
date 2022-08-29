@@ -17,7 +17,14 @@ public class MainSpark {
         sparkConf.setAppName("stam");
         sparkConf.setMaster("local[*]");
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
+        sc.setLogLevel("ERROR");
         JavaRDD<Integer> rdd = sc.parallelize(List.of(1, 2, 3));
+
+        int[] x =new int[1];
+        sc.textFile("/taxi_orders.txt").foreach(line->{
+            x[0]++;
+        });
+
 
         List<Integer> list = rdd.filter(i -> i < 3).collect();
         list.forEach(System.out::println);
