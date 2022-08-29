@@ -1,4 +1,4 @@
-package com.elta.words;
+package com.elta.words.services;
 
 import org.apache.spark.api.java.JavaRDD;
 

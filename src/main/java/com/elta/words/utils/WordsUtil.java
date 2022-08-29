@@ -1,14 +1,15 @@
-package com.elta.words;
+package com.elta.words.utils;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by Evegeny on 20/04/2016.
  */
 public class WordsUtil {
-    public static List<String> getWords(String text) {
+    public static Iterator<String> getWords(String text) {
         List<String> words = new ArrayList<>();
         BreakIterator breakIterator = BreakIterator.getWordInstance();
         breakIterator.setText(text);
@@ -21,6 +22,6 @@ public class WordsUtil {
             }
         }
 
-        return words;
+        return words.iterator();
     }
 }
