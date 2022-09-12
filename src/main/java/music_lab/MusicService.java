@@ -7,4 +7,6 @@ import java.util.List;
  */
 public interface MusicService {
     List<String> mostPopular(String path, int amount);
+
+    double judgeArtists(String artist1, String artist2, int amount);
 }

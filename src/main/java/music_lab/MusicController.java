@@ -24,7 +24,6 @@ public class MusicController {
     public long calculateWordsNumber(@RequestParam String path) {
         Dataset<String> dataset = spark.read().textFile(path);
         dataset.show();
-        File file = new File("c:\\temp");
         return dataset.count();
     }
 }

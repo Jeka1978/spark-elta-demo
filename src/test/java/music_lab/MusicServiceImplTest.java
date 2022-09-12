@@ -1,5 +1,6 @@
 package music_lab;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,11 @@ public class MusicServiceImplTest {
     public void mostPopular() {
         List<String> list = musicService.mostPopular("data/songs/pinkfloyd", 5);
         System.out.println(list);
+    }
+
+    @Test
+    public void testJudgeIsCorrect() {
+       double percentage =  musicService.judgeArtists("data/testData1","data/testData2",3);
+        Assert.assertEquals(33.33,percentage,0.001);
     }
 }
