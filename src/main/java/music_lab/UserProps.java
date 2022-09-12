@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 
@@ -23,10 +25,10 @@ import static java.util.Arrays.asList;
 @Component
 public class UserProps implements Serializable {
 
-    private List<String> garbage;
+    private Set<String> garbage;
 
     @Value("${garbage}")
     public void setGarbage(String[] garbageWords) {
-        this.garbage = asList(garbageWords);
+        this.garbage = new HashSet<>(asList(garbageWords));
     }
 }

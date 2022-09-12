@@ -34,7 +34,6 @@ public class MusicServiceImpl implements MusicService, Serializable {
     @SneakyThrows
     @Override
     public List<String> mostPopular(String path, int amount) {
-
         Dataset<Row> allWordsDF = Files.list(Paths.get(path))
                 .map(fileName -> getDataFrame(fileName.toString()))
                 .reduce(Dataset::union)
@@ -52,8 +51,11 @@ public class MusicServiceImpl implements MusicService, Serializable {
 
     private Dataset<Row> getDataFrame(String fileName) {
         Dataset<String> dataset = spark.read().textFile(fileName);
-        Dataset<Row> worfdsDF = dataset.flatMap((FlatMapFunction<String, String>) WordsUtil::getWords, Encoders.STRING()).select("value");
-        return worfdsDF.withColumn("word", lower(col("value"))).drop("value").filter(not(col("word").isin(userProps.value().getGarbage().toArray())));
+        Dataset<String> wordsDF = dataset.flatMap((FlatMapFunction<String, String>) WordsUtil::getWords, Encoders.STRING());
+        return wordsDF
+                .select(lower(col("value")).as("word"))
+                .where(not(col("word").isin(userProps.value().getGarbage().toArray())));
+//        return wordsDF.withColumn("word", lower(col("value"))).drop("value").filter(not(col("word").isin(userProps.value().getGarbage().toArray())));
 
 
 //        dataset.withColumn("words", split(col("value"),"\\W+")).drop("value").withColumn("word",explode(col("words"))).drop("words").show();
