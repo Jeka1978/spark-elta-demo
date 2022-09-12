@@ -8,13 +8,18 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.sparkproject.guava.cache.Cache;
+import org.sparkproject.guava.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.apache.spark.sql.functions.*;
@@ -31,22 +36,33 @@ public class MusicServiceImpl implements MusicService, Serializable {
     @Autowired
     private Broadcast<UserProps> userProps;
 
+
+    Cache<String, Dataset<Row>> cache = CacheBuilder.newBuilder().concurrencyLevel(1).weakKeys().softValues().expireAfterAccess(10, TimeUnit.MINUTES).build();
+
+
     @SneakyThrows
     @Override
     public List<String> mostPopular(String path, int amount) {
-        Dataset<Row> allWordsDF = Files.list(Paths.get(path))
+
+        Dataset<Row> artistDF = cache.get(path, () -> Files.list(Paths.get(path))
                 .map(fileName -> getDataFrame(fileName.toString()))
                 .reduce(Dataset::union)
-                .get();
-
-        Dataset<Row> rowDataset = allWordsDF.groupBy(col("word")).agg(count(col("word")).as("amount"))
-                .orderBy(col("amount").desc());
-
-        rowDataset.show();
-
-        return rowDataset.takeAsList(amount).stream().map(row -> (String) row.getAs("word")).collect(Collectors.toList());
+                .get()
+                .groupBy(col("word")).agg(count(col("word")).as("amount"))
+                .orderBy(col("amount").desc())
+                .persist());
+        artistDF.show(amount);
+        return artistDF.takeAsList(amount).stream().map(row -> (String) row.getAs("word")).collect(Collectors.toList());
 
 
+    }
+
+    @Override
+    public double judgeArtists(String artist1, String artist2, int amount) {
+        Set<String> set1 = new HashSet<>(mostPopular(artist1, amount));
+        Set<String> set2 = new HashSet<>(mostPopular(artist2, amount));
+        double common = set1.stream().filter(set2::contains).count();
+        return common/amount*100;
     }
 
     private Dataset<Row> getDataFrame(String fileName) {

@@ -29,7 +29,7 @@ public class MusicServiceImplTest {
 
     @Test
     public void testJudgeIsCorrect() {
-       double percentage =  musicService.judgeArtists("data/testData1","data/testData2",3);
-        Assert.assertEquals(33.33,percentage,0.001);
+       double percentage =  musicService.judgeArtists("data/testData/testData1","data/testData/testData2",3);
+        Assert.assertEquals(33.33,percentage,0.01);
     }
 }
