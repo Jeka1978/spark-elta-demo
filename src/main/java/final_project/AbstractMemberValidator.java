@@ -14,8 +14,9 @@ public abstract class AbstractMemberValidator implements MemberValidator {
     @Autowired
     private MemberExceptionHandler memberExceptionHandler;
     @Override
-    public Dataset<Row> validate(Dataset<Row> df) {
+    public final Dataset<Row> validate(Dataset<Row> df) {
         df.persist();
+        df.count();
         Dataset<Row> notValidData = df.filter(not(getValidData()));
         memberExceptionHandler.handle(notValidData, getReasonWhyDataNotValid());
         return df.filter(getValidData());
