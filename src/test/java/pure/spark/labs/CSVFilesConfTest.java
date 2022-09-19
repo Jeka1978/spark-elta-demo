@@ -169,7 +169,7 @@ public class CSVFilesConfTest {
 
     @Test
     public void testUdf() {
-        membersDf.withColumn("nickName", call_udf(NickNameCalculator.class.getName(), col("memid"))).select("memid","surname","nickName").show(false);
+        membersDf.withColumn("nickName", callUDF(NickNameCalculatorUdf.class.getName(), col("memid"))).select("memid","surname","nickName").show(false);
     }
 }
 
